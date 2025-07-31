@@ -15,6 +15,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ImageColumn;
+use Illuminate\Support\Facades\Storage;
 
 class ProductResource extends Resource
 {
@@ -29,8 +32,16 @@ class ProductResource extends Resource
                 TextInput::make('name')->required()->maxLength(255),
                 TextInput::make('price')->numeric()->required(),
                 TextInput::make('quantity')->numeric()->required(),
-                TextInput::make('image')->url(),
-            ]);
+                FileUpload::make('image')
+                    ->disk('public')
+                    ->directory('products')
+                    ->image()
+                    ->preserveFilenames()
+                    ->maxSize(2048)
+                    ->imagePreviewHeight('200')
+                    ->visibility('visible')
+                    ->downloadable()
+                ]);
     }
 
     public static function table(Table $table): Table
@@ -38,10 +49,16 @@ class ProductResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->sortable(),
-                TextColumn::make('name')->searchable(),
-                TextColumn::make('price')->money('rub', true),
-                TextColumn::make('quantity'),
-            ])
+                TextColumn::make('name')->searchable()->label('Название'),
+                TextColumn::make('price')->money('rub', true)->label(label: 'Цена'),
+                TextColumn::make('quantity')->label('Количество'),
+                ImageColumn::make('image')
+                    ->disk('public') // ОБЯЗАТЕЛЬНО!
+                    ->height(60)
+                    ->width(60)
+                    ->getStateUsing(fn ($record) => Storage::url($record->image))
+                    ->label('Изображение'),
+                ])
             ->filters([
                 //
             ])
