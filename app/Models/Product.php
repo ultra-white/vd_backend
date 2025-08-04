@@ -13,7 +13,7 @@ class Product extends Model
         return $this->hasMany(ProductImage::class);
     }
 
-    public function detail() {
+    public function details() {
         return $this->hasOne(ProductDetail::class);
     }
 

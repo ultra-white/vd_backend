@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
@@ -16,3 +17,5 @@ Route::get('/products', function () {
             ];
         });
 });
+
+Route::get('/product/{id}', [ProductController::class, 'show']);

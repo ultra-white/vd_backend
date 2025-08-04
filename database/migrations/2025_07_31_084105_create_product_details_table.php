@@ -17,8 +17,8 @@ return new class extends Migration
             $table->string('description');
             $table->string('structure');
             $table->string('season')->nullable();
-            $table->string('product_parametrs')->nullable();
-            $table->string('model_parametrs')->nullable();
+            $table->string('product_parameters')->nullable();
+            $table->string('model_parameters')->nullable();
             $table->timestamps();
         });
     }
