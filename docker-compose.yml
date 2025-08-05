@@ -21,6 +21,22 @@ services:
             DB_USERNAME: ${DB_USERNAME}
             DB_PASSWORD: ${DB_PASSWORD}
 
+    certbot:
+        image: certbot/certbot:latest
+        container_name: certbot
+        volumes:
+            - /var/www/acme-challenge:/var/www/acme-challenge
+            - /etc/letsencrypt:/etc/letsencrypt
+        entrypoint: ""
+        command: >
+            sh -c "certbot certonly --webroot -w /var/www/acme-challenge
+            -d ventodoro.ru --email ventodoro@yandex.ru
+            --agree-tos --non-interactive"
+        depends_on:
+            - nginx
+        networks:
+            - ventodoro
+
     nginx:
         image: nginx:alpine
         container_name: nginx
@@ -30,6 +46,8 @@ services:
         volumes:
             - ./:/var/www
             - ./docker/nginx/:/etc/nginx/conf.d/
+            - /etc/letsencrypt:/etc/letsencrypt:ro
+            - /var/www/acme-challenge:/var/www/acme-challenge
         networks:
             - ventodoro
 
