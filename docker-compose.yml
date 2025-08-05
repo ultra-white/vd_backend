@@ -30,11 +30,12 @@ services:
             - /etc/letsencrypt:/etc/letsencrypt
             - /var/lib/letsencrypt:/var/lib/letsencrypt
         command: >
-            certonly --standalone
+            certonly --webroot
+            --webroot-path=/var/www/acme-challenge
             --non-interactive
             --agree-tos
             --email ventodoro@yandex.ru
-            -d ventodoro.ru
+            -d admin.ventodoro.ru
         networks:
             - ventodoro
 
