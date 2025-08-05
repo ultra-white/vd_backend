@@ -1,20 +1,19 @@
-version: "3.8"
-
 services:
     app:
         build:
             context: .
             dockerfile: Dockerfile
-        container_name: ventodoro-backend
+        container_name: laravel
         restart: always
         volumes:
             - ./:/var/www
-        ports:
-            - "8000:8000" # Laravel dev-server
         networks:
             - ventodoro
+        ports:
+            - 9000
         depends_on:
             - database
+            - nginx
         environment:
             DB_HOST: database
             DB_PORT: 5432
@@ -22,10 +21,22 @@ services:
             DB_USERNAME: ${DB_USERNAME}
             DB_PASSWORD: ${DB_PASSWORD}
 
+    nginx:
+        image: nginx:alpine
+        container_name: nginx
+        restart: unless-stopped
+        ports:
+            - "8989:80"
+        volumes:
+            - ./:/var/www
+            - ./docker/nginx/:/etc/nginx/conf.d/
+        networks:
+            - ventodoro
+
     database:
         image: postgres:17.4
         shm_size: 1gb
-        container_name: ventodoro-db
+        container_name: database
         environment:
             POSTGRES_USER: ${DB_USERNAME}
             POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd
@@ -42,6 +53,7 @@ services:
 
 networks:
     ventodoro:
+        driver: bridge
 
 secrets:
     postgres-passwd:
