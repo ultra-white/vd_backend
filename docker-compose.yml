@@ -24,16 +24,17 @@ services:
     certbot:
         image: certbot/certbot:latest
         container_name: certbot
+        ports:
+            - "80:80"
         volumes:
-            - /var/www/acme-challenge:/var/www/acme-challenge
             - /etc/letsencrypt:/etc/letsencrypt
-        entrypoint: ""
+            - /var/lib/letsencrypt:/var/lib/letsencrypt
         command: >
-            sh -c "certbot certonly --webroot -w /var/www/acme-challenge
-            -d ventodoro.ru --email ventodoro@yandex.ru
-            --agree-tos --non-interactive"
-        depends_on:
-            - nginx
+            certonly --standalone
+            --non-interactive
+            --agree-tos
+            --email ventodoro@yandex.ru
+            -d ventodoro.ru
         networks:
             - ventodoro
 
@@ -42,12 +43,15 @@ services:
         container_name: nginx
         restart: unless-stopped
         ports:
-            - "8989:80"
+            - "80:80"
+            - "443:443"
+        depends_on:
+            - app
+            - certbot
         volumes:
             - ./:/var/www
-            - ./docker/nginx/:/etc/nginx/conf.d/
+            - ./docker/nginx:/etc/nginx/conf.d
             - /etc/letsencrypt:/etc/letsencrypt:ro
-            - /var/www/acme-challenge:/var/www/acme-challenge
         networks:
             - ventodoro
 
