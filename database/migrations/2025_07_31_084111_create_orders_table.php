@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('full_name');
             $table->string('phone');
+            $table->string('email');
             $table->text('address');
             $table->enum('payment_method', ['card', 'cash']);
             $table->foreignId('promocode_id')->nullable()->constrained('promocodes');

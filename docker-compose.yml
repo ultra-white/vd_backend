@@ -1,11 +1,35 @@
+version: "3.8"
+
 services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: ventodoro-backend
+        restart: always
+        volumes:
+            - ./:/var/www
+        ports:
+            - "8000:8000" # Laravel dev-server
+        networks:
+            - ventodoro
+        depends_on:
+            - database
+        environment:
+            DB_HOST: database
+            DB_PORT: 5432
+            DB_DATABASE: ${DB_DATABASE}
+            DB_USERNAME: ${DB_USERNAME}
+            DB_PASSWORD: ${DB_PASSWORD}
+
     database:
         image: postgres:17.4
         shm_size: 1gb
+        container_name: ventodoro-db
         environment:
-            POSTGRES_USER: $DB_USERNAME
+            POSTGRES_USER: ${DB_USERNAME}
             POSTGRES_PASSWORD_FILE: /run/secrets/postgres-passwd
-            POSTGRES_DB: $DB_DATABASE
+            POSTGRES_DB: ${DB_DATABASE}
         secrets:
             - postgres-passwd
         networks:
